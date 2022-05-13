@@ -1,0 +1,262 @@
+---
+title: "Effect modification in RRMM: NMA Simuation"
+author: "Chris Rose, Norwegian Institute of Public health"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::word_document:
+    fig_width: 7
+    fig_height: 5.6
+---
+
+This report was generated on `r date()` using git revision
+`r system("git rev-parse --short HEAD", intern = TRUE)`.
+
+```{r Knitr options, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  dpi=300
+)
+```
+
+## Introduction
+
+This document describes a simulation study to investigate the likely effect of the estimated effect modification on NMA estimates.
+
+The following packages are used, and we set the random seed to ensure reproducibility (at least under the environment used, which is described in full in the Appendix).
+
+```{r}
+library(tidyverse)
+library(netmeta)
+library(knitr)
+import::from(magrittr, "%>%")
+set.seed(1234)
+```
+
+## Network topology and treatment components
+
+We  consider a fixed network topology, specifically the one for HR for PFS. Note that the network is disconnected (see figure below), and we address this using component NMA.
+
+```{r}
+net_data <- read.csv("pfs.csv")
+
+# Create a wrapper to perform a component NMA that suppresses warnings that
+# occur due to the way that the strings are formatted in the data.
+cnma <- function(x) suppressWarnings(
+  x %>% netmeta::discomb(TE, seTE, treat1, treat2, studlab, data = .,
+                         reference.group = "R + GC",
+                         sep.comps = "+",
+                         comb.fixed = FALSE, comb.random = TRUE))
+
+# Make a disconnected component NMA object that can be used as a template
+# in subsequent code.
+net <- net_data %>% cnma()
+```
+
+The following figure shows the network topology:
+
+```{r}
+suppressWarnings(
+  net_data %>% 
+    discomb(TE, seTE, treat1, treat2, studlab, data = .) %>% 
+    netgraph()
+)
+```
+
+## Simulating networks of evidence
+
+To simulate a network of evidence, we need to simulate log HRs (effect sizes). We do this by sampling component-specific effects (cf. relative treatment effects) and then using these to compute relative treatment effects as contrasts, using the matrix C, as defined in the paper on CNMA by Rücker et al. The distribution used is based on the estimated component effects in the CNMA of the PFS data. This gives log HRs with similar distribution to that in the PFS data.
+
+```{r}
+sim_es <- function(x = net) { # Example component NMA object.
+  component_effects <- rnorm(length(x$comps), 
+                             mean = mean(x$Comp.fixed),
+                             sd = sd(x$Comp.fixed))
+  es <- as.matrix(dist(x$C.matrix %*% component_effects))
+  es[lower.tri(es)] <- -es[lower.tri(es)]
+  es
+}
+```
+
+To simulate a network of evidence, we also need to define the variance of the random effects (i.e., heterogeneity), and we use an assumed value based on the NMAs performed for the HTA.
+
+```{r}
+os_s2re <- 0.115 # Estimated random effects variance.
+```
+
+We also need to parameterize the distribution of effect modification. The estimates used are from the meta-analysis of relative hazard ratio (RHR) for refractory status for PFS, which corresponds to the worst-case scenario (i.e., largest effect modification). The estimated values (a point estimate and a 95% CI) are on a ratio scale, so we take logs to define the mean and standard error on the log HR scale. Similarly, we define the worst-case RHR for LOT (also from PFS).
+
+```{r}
+pfs_em <- list(mean = log(1.31), se = (log(1.47)-log(1.16))/(2*1.96))
+lot_em <- list(mean = log(1.19), se = (log(1.29)-log(1.09))/(2*1.96))
+```
+
+The function `simulate_data()` simulates a network of evidence that has the same topology as, and effect sizes and standard errors that are similar in distribution to, the PFS network. The returned data frame has two columns for effect size, `cTE` and `eTE`, for control and experimental, respectively. The control effect sizes are not subject to effect modification, while the experimental effect sizes are. The variable `nl` specifies the number of levels of the effect modification variable, which is 2 for refractory status, and can be larger for LOT. Because RHR is defined relative to the previous level, effect modification "compounds" with each subsequent level, which is equivalent to being cumulative on the log scale. We assume that there is no effect modification for the first level of the effect modifier variable, and then that modification applies and compounds with each subsequent level.
+
+```{r}
+simulate_data <- function(es = sim_es(),   # True effect sizes.
+                          x = net,         # Example component NMA object.
+                          em = pfs_em,     # Effect modification parameters.
+                          nl = 2,          # Levels of EM variable.
+                          s2re = os_s2re,  # Random effect *variance*.
+                          unif_dir = FALSE # Uniform direction?
+                          ) {
+  n <- length(x$trts)
+
+  # Allocate a data frame using the template.
+  sim_data <- data.frame(studlab = x$studlab,
+                         treat1 = x$treat1, treat2 = x$treat2,
+                         cTE = NA, eTE = NA, seTE = NA)
+  
+  # Model SE as lognormal, based on the actual data.
+  sim_data$seTE <- rlnorm(length(x$seTE),
+                          mean = mean(log(x$seTE)), 
+                          sd = sd(log(x$seTE)))
+  
+  # Dir. of effect modification is assumed constant within comparison.
+  em_dir <- matrix(sign(rnorm(n * n)), nrow = n, ncol = n)
+  em_dir[lower.tri(em_dir)] <- -em_dir[lower.tri(em_dir)]
+  rownames(em_dir) <- rownames(es)
+  colnames(em_dir) <- colnames(es)
+  
+  # Simulate control and experimental effect sizes reported by
+  # the simulated studies.
+  for (i in 1:nrow(sim_data)) {
+    t1 <- sim_data$treat1[i] %>% as.character()
+    t2 <- sim_data$treat2[i] %>% as.character()
+    
+    # Simulate control data.
+    se <- rnorm(1, sd = sim_data$seTE[i]) # Sampling error.
+    re <- rnorm(1, sd = sqrt(s2re))       # Random effect.
+    sim_data$cTE[i] <- es[t1, t2] + se + re
+    
+    # Simulate experimental data.
+    props <- runif(nl, min = 0, max = 1)
+    props <- props / sum(props) # Cat. dist. over levels.
+    direction <- if (unif_dir) 1 else em_dir[t1, t2]
+    e <- c(0, rnorm(nl - 1, mean = em$mean * direction, sd = em$se))
+    e <- cumsum(e) # EM accumulates over level (on the log scale).
+    e <- props %*% e # Average effect modification.
+    sim_data$eTE[i] <- sim_data$cTE[i] + e
+  }
+  sim_data
+}
+```
+
+## Comparing estimates
+
+We want to know whether effect modification likely leads to different conclusions. To assess this, we estimate treatment effects under no effect modification, and under modification, and then test that corresponding estimates are equal. Testing is performed using two-sided Z-tests, given the means and SEs of the estimates. We summarize the tests by counting how many are "significant" (p < 0.05). We restrict testing to one triangle of the matrix of estimates, to prevent double-counting.
+
+```{r}
+compare_estimates <- function(s) { # s given by simulate_data().
+  # Fit CNMA models to the control and experimental data.
+  suppressWarnings(
+    net_c <- s %>% discomb(cTE, seTE, treat1, treat2, studlab,
+                           reference.group = "R + GC", data = .,)
+  )
+  suppressWarnings(
+    net_e <- s %>% discomb(eTE, seTE, treat1, treat2, studlab,
+                           reference.group = "R + GC", data = .,)
+  )
+  # Z-test of equality of estimates.
+  est_c <- net_c$TE.random
+  se_c  <- net_c$seTE.random
+  est_e <- net_e$TE.random
+  se_e  <- net_e$seTE.random
+  p <- 1 - pnorm(abs(est_c - est_e) / sqrt((se_c^2) + (se_e^2)))
+  # Return number of elements of upper triangle with "significant" p-values,
+  # and number of elements in the upper triangle.
+  sig <- p[upper.tri(p)] < 0.05
+  list(sig = sum(sig), n = length(sig))
+}
+```
+
+# Simulation studies
+
+The function `simulation_study()` runs a simulation study under specified conditions (combinations of effect modification and random effects).
+
+```{r}
+simulation_study <- function(n = 1000,
+                             x = net,
+                             em = pfs_em,      # Effect mod. parameters.
+                             nl = 2,           # N. levels of EM var.
+                             s2re = os_s2re,   # Random effect *variance*.
+                             unif_dir = FALSE, # Uniform direction?
+                             conditions = ""
+                             ) {
+  f <- function() {
+    sim_es(x = net) %>% 
+      simulate_data(es = ., x = net,
+                    em = em,
+                    nl = nl,
+                    s2re = s2re,
+                    unif_dir = unif_dir) %>% 
+      compare_estimates()
+  }
+  results <- replicate(n, f(), simplify = FALSE)
+  
+  # Collect the results.
+  sig <- function(x) x$sig
+  n   <- function(x) x$n
+  sig <- results %>% map(sig) %>% unlist() %>% sum()
+  n   <- results %>% map(n)   %>% unlist() %>% sum()
+  
+  list(conditions = conditions, sig = sig, n = n)
+}
+```
+
+The full experiment is a set of simulation studies, including sensitivity analyses.
+
+```{r}
+run_experiment <- function(n = 1000) {
+  list(
+    # Non-uniform direction of effect modification for refractory status.
+    simulation_study(n,
+                     conditions = "Refr: EM [✓] Het. [✓]"),
+    simulation_study(n, em = list(mean = 0, se = 0),
+                     conditions = "Refr: EM [×] Het. [✓]"),
+    
+    # Sanity check that absent both EM and heterogeneity, there
+    # are no differences. Note that no heterogeneity but
+    # effect modification is an unrealistic scenario, so we
+    # omit that.
+    simulation_study(n, s2re = 0, em = list(mean = 0, se = 0),
+                     conditions = "Refr: EM [×] Het. [×]"),
+    
+    # Sensitivity analysis: uniform direction of effect
+    # modification for refractory status.
+    simulation_study(n,
+                     unif_dir = TRUE,
+                     conditions = "Refr: EM [✓] Het. [✓] (Unif.)"),
+    simulation_study(n, em = list(mean = 0, se = 0),
+                     unif_dir = TRUE,
+                     conditions = "Refr: EM [×] Het. [✓] (Unif.)"),
+    
+    # Non-uniform direction of effect modification for LOT.
+    # Note that we don't run the simulations with heterogeneity
+    # alone, because this is identical to the corresponding simulations
+    # above.
+    simulation_study(n, em = lot_em, nl = 4,
+                     conditions = "LOT: EM [✓] Het. [✓]"),
+    
+    # Sensitivity analysis: uniform direction of effect modification
+    # for LOT.
+    simulation_study(n, em = lot_em, nl = 4,
+                     unif_dir = TRUE,
+                     conditions = "LOT: EM [✓] Het. [✓] (Unif.)")
+  ) %>% map(as_tibble) %>% bind_rows()
+}
+
+run_experiment(n = 1000) %>% kable()
+```
+
+
+
+## Appendix: System, R version, and package details
+
+The following shows a summary of the system, R version, and packages used to
+perform the simulation.
+
+```{r Session info, echo=FALSE}
+sessionInfo()
+```

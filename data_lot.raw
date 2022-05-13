@@ -1,0 +1,69 @@
+author,     year, trial,            comparison,      lot,  outcome, hr,    hr_lb, hr_ub, pval,   source, notes
+Attal,      2019, ICARIA-MM,        IsPd vs Pd,      2-3,  PFS,     0.59,  0.40,  0.88,  .,      Fig. 3, Interaction p-val is 0.9583
+Attal,      2019, ICARIA-MM,        IsPd vs Pd,      >3,   PFS,     0.59,  0.36,  0.98,  .,      Fig. 3, Interaction p-val is 0.9583
+Bahlis,     2020, POLLUX,           DRd vs Rd,       1,    PFS,     0.42,  0.30,  0.58,  .,      Fig. 2, .
+Bahlis,     2020, POLLUX,           DRd vs Rd,       2,    PFS,     0.39,  0.26,  0.58,  .,      Fig. 2, .
+Bahlis,     2020, POLLUX,           DRd vs Rd,       3,    PFS,     0.48,  0.25,  0.94,  .,      Fig. 2, .
+Bahlis,     2020, POLLUX,           DRd vs Rd,       >3,   PFS,     0.74,  0.24,  2.26,  .,      Fig. 2, .
+Dimopoulos, 2013, VANTAGE 088,      VorV vs V,       1,    PFS,     0.687, 0.507, 0.932, 0.0152,Tab. 2, .
+Dimopoulos, 2013, VANTAGE 088,      VorV vs V,       2-3,  PFS,     0.916, 0.714, 1.175, 0.4871, Tab. 2, .
+Dimopoulos, 2016, ENDEAVOR,         Kd vs Vd,        1,    PFS,     0.45,  0.33,  0.61,  .,      Fig. 3, .
+Dimopoulos, 2016, ENDEAVOR,         Kd vs Vd,        2-3,  PFS,     0.60,  0.47,  0.78,  .,      Fig. 3, .
+Dimopoulos, 2018, ELOQUENT-3,       EPd vs Pd,       2-3,  PFS,     0.55,  0.31,  0.98,  .,      Fig. 1, Figure not numbered.
+Dimopoulos, 2018, ELOQUENT-3,       EPd vs Pd,       >=4,  PFS,     0.51,  0.24,  1.08,  .,      Fig. 1, Figure not numbered.
+Dimopoulos, 2018, ELOQUENT-2,       ELd vs Ld,       1,    PFS,     0.77,  0.59,  1.01,  .,      Fig. 3, .
+Dimopoulos, 2018, ELOQUENT-2,       ELd vs Ld,       2-3,  PFS,     0.68,  0.53,  0.87,  .,      Fig. 3, .
+Dimopoulos, 2020, ELOQUENT-2,       ELd vs Ld,       1,    OS,      1.00,  0.77,  1.32,  .,      Fig. 3, .
+Dimopoulos, 2020, ELOQUENT-2,       ELd vs Ld,       2-3,  OS,      0.71,  0.54,  0.92,  .,      Fig. 3, .
+Dimopoulos, 2021, APOLLO,           DPd vs Pd,       1,    PFS,     0.70,  0.30,  1.67,  .,      p. 808, .
+Dimopoulos, 2021, APOLLO,           DPd vs Pd,       2-3,  PFS,     0.66,  0.48,  0.92,  .,      p. 808, .
+Dimopoulos, 2021, APOLLO,           DPd vs Pd,       >=4,  PFS,     0.40,  0.18,  0.90,  .,      p. 808, .
+Grosicki,   2020, BOSTON,           SeVd vs Vd,      1,    PFS,     0.63,  0.41,  0.96,  .,      Fig. 3, .
+Grosicki,   2020, BOSTON,           SeVd vs Vd,      2,    PFS,     0.65,  0.40,  1.07,  .,      Fig. 3, .
+Grosicki,   2020, BOSTON,           SeVd vs Vd,      3,    PFS,     0.82,  0.45,  1.48,  .,      Fig. 3, .
+Hou,        2017, China Cont.,      IRd vs Rd,       1,    PFS,     0.847, 0.400, 1.789, .,      Fig. 2, .
+Hou,        2017, China Cont.,      IRd vs Rd,       2,    PFS,     0.370, 0.164, 0.834, .,      Fig. 2, .
+Hou,        2017, China Cont.,      IRd vs Rd,       3,    PFS,     0.702, 0.212, 2.319, .,      Fig. 2, .
+Hou,        2017, China Cont.,      IRd vs Rd,       1,    OS,      0.521, 0.216, 1.258, .,      Fig. 3, .
+Hou,        2017, China Cont.,      IRd vs Rd,       2,    OS,      0.386, 0.172, 0.869, .,      Fig. 3, .
+Hou,        2017, China Cont.,      IRd vs Rd,       3,    OS,      0.336, 0.079, 1.421, .,      Fig. 3, .
+Jakubowiak, 2016, NCT01478048,      EVd vs Vd,       1,    PFS,     0.74,  0.48,  1.13,  .,      Fig. 2, .
+Jakubowiak, 2016, NCT01478048,      EVd vs Vd,       2-3,  PFS,     0.76,  0.43,  1.35,  .,      Fig. 2, .
+Kumar,      2020, BELLINI,          VeVd vs Vd,      1,    PFS,     0.75,  0.45,  1.26,  .,      Fig. S3,.
+Kumar,      2020, BELLINI,          VeVd vs Vd,      2-3,  PFS,     0.54,  0.33,  0.88,  .,      Fig. S3,.
+Kumar,      2020, BELLINI,          VeVd vs Vd,      1,    OS,      1.67,  0.61,  4.55,  .,      Fig. S4,.
+Kumar,      2020, BELLINI,          VeVd vs Vd,      2-3,  OS,      2.33,  0.96,  5.69,  .,      Fig. S4,.
+Lu,         2021, LEPUS,            DVd vs Vd,       1,    PFS,     0.16,  0.06,  0.47,  .,      Fig. 2, .
+Lu,         2021, LEPUS,            DVd vs Vd,       2,    PFS,     0.52,  0.25,  1.11,  .,      Fig. 2, .
+Lu,         2021, LEPUS,            DVd vs Vd,       3,    PFS,     0.63,  0.13,  3.08,  .,      Fig. 2, .
+Lu,         2021, LEPUS,            DVd vs Vd,       >3,   PFS,     0.26,  0.11,  0.61,  .,      Fig. 2, .
+Mateos,     2020, CASTOR,           DVd vs Vd,       1,    PFS,     0.22,  0.15,  0.32,  .,      Fig. 2, .
+Mateos,     2020, CASTOR,           DVd vs Vd,       2,    PFS,     0.46,  0.30,  0.72,  .,      Fig. 2, .
+Mateos,     2020, CASTOR,           DVd vs Vd,       3,    PFS,     0.60,  0.33,  1.07,  .,      Fig. 2, .
+Mateos,     2020, CASTOR,           DVd vs Vd,       >3,   PFS,     0.37,  0.17,  0.80,  .,      Fig. 2, .
+Moreau,     2021, IKEMA,            IsKd vs Kd,      1,    PFS,     0.59,  0.31,  1.12,  .,      Fig. 3, .
+Moreau,     2021, IKEMA,            IsKd vs Kd,      >1,   PFS,     0.48,  0.29,  0.78,  .,      Fig. 3, .
+Orlowski,   2019, ENDEAVOR,         Kd vs Vd,        1,    OS,      0.771, 0.583, 1.018, .,      Fig. 3, .
+Orlowski,   2019, ENDEAVOR,         Kd vs Vd,        2-3,  OS,      0.752, 0.589, 0.959, .,      Fig. 3, .
+Palumbo,    2016, CASTOR,           DVd vs Vd,       1,    PFS,     0.31,  0.18,  0.52,  .,      Fig. 2, .
+Palumbo,    2016, CASTOR,           DVd vs Vd,       2,    PFS,     0.50,  0.28,  0.89,  .,      Fig. 2, .
+Palumbo,    2016, CASTOR,           DVd vs Vd,       3,    PFS,     0.66,  0.31,  1.41,  .,      Fig. 2, .
+Palumbo,    2016, CASTOR,           DVd vs Vd,       >3,   PFS,     0.48,  0.20,  1.16,  .,      Fig. 2, .
+Richardson, 2019, OPTIMISMM,        PVd vs Vd,       1,    PFS,     0.54,  0.36,  0.82,  .,      Fig. 3, .
+Richardson, 2019, OPTIMISMM,        PVd vs Vd,       2,    PFS,     0.67,  0.48,  0.94,  .,      Fig. 3, .
+Richardson, 2019, OPTIMISMM,        PVd vs Vd,       >2,   PFS,     0.60,  0.38,  0.95,  .,      Fig. 3, .
+Richardson, 2021, TOURMALINE-MM1,   IRd vs Rd,       1,    OS,      0.976, 0.773, 1.233, .,      Fig. 2, Electronic data capture data
+Richardson, 2021, TOURMALINE-MM1,   IRd vs Rd,       2,    OS,      0.926, 0.669, 1.282, .,      Fig. 2, Electronic data capture data
+Richardson, 2021, TOURMALINE-MM1,   IRd vs Rd,       >=3,  OS,      0.883, 0.498, 1.564, .,      Fig. 2, Electronic data capture data
+San-Miguel, 2014, PANORAMA-1,       FVd vs Vd,       1,    PFS,     0.66,  0.50,  0.86,  .,      AT 9,   Appendix table 9.
+San-Miguel, 2014, PANORAMA-1,       FVd vs Vd,       2-3,  PFS,     0.64,  0.50,  0.83,  .,      AT 9,   Appendix table 9.
+San-Miguel, 2016, PANORAMA 1,       FVd vs Vd,       1,    OS,      0.90,  0.68,  1.19,  .,      Fig. 3, .
+San-Miguel, 2016, PANORAMA 1,       FVd vs Vd,       2-3,  OS,      0.96,  0.74,  1.26,  .,      Fig. 3, .
+San-Miguel, 2013, MM-003,           Pd vs GC,        2,    PFS,     0.47,  0.18,  1.25,  .,      Fig. 2, .
+San-Miguel, 2013, MM-003,           Pd vs GC,        >2,   PFS,     0.48,  0.39,  0.61,  .,      Fig. 3, .
+San-Miguel, 2013, MM-003,           Pd vs GC,        2,    OS,      0.44,  0.14,  1.40,  .,      Fig. 3, .
+San-Miguel, 2013, MM-003,           Pd vs GC,        >2,   OS,      0.76,  0.58,  1.01,  .,      Fig. 2, .
+Siegel,     2018, ASPIRE,           KRd vs Rd,       1,    OS,      0.81,  0.62,  1.06,  .,      p. 730, Subgroup Analysis of OS section  
+Siegel,     2018, ASPIRE,           KRd vs Rd,       >=2,  OS,      0.79,  0.62,  0.99,  .,      p. 730, Subgroup Analysis of OS section  
+Usamani,    2022, CANDOR,           DKd vs Kd,       1,    PFS,     0.66,  0.42,  1.04,  .,      Fig. 3, .
+Usamani,    2022, CANDOR,           DKd vs Kd,       2-3,  PFS,     0.55,  0.39,  0.78,  .,      Fig. 3, .

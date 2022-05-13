@@ -1,0 +1,50 @@
+author,     year, trial,            comparison,      refract,                outcome, hr,    hr_lb, hr_ub, pval,   source, notes
+Attal,      2019, ICARIA-MM,        IsPd vs Pd,      Refractory to R,        PFS,     0.59,  0.43,  0.82,  .,      Fig. 3, .
+Attal,      2019, ICARIA-MM,        IsPd vs Pd,      Not refractory to R,    PFS,     0.18,  0.02,  1.49,  .,      Fig. 3, .
+Bahlis,     2020, POLLUX,           DRd vs Rd,       Previous R use,         PFS,     0.38,  0.21,  0.66,  .,      Fig. 2, .
+Bahlis,     2020, POLLUX,           DRd vs Rd,       No previous R use,      PFS,     0.45,  0.35,  0.58,  .,      Fig. 2, .
+Dimopoulos, 2013, VANTAGE 088,      VorV vs V,       Previous IMiD use,      PFS,     0.757, 0.595, 0.963, 0.0230, Tab. 2, .
+Dimopoulos, 2013, VANTAGE 088,      VorV vs V,       No IMiD use,            PFS,     0.926, 0.670, 1.279, 0.6408, Tab. 2, .
+Dimopoulos, 2016, ENDEAVOR,         Kd vs Vd,        Not refractory to R,    PFS,     0.44,  0.34,  0.56,  .,      Fig. 3, .
+Dimopoulos, 2016, ENDEAVOR,         Kd vs Vd,        Refractory to R,        PFS,     0.80,  0.57,  1.11,  .,      Fig. 3, .
+Dimopoulos, 2018, ELOQUENT-3,       EPd vs Pd,       Ref. to R and a PI,     PFS,     0.56,  0.33,  0.97,  .,      Fig. 1, .
+Dimopoulos, 2018, ELOQUENT-3,       EPd vs Pd,       Not ref. to R and a PI, PFS,     0.51,  0.21,  1.19,  .,      Fig. 1, .
+Dimopoulos, 2021, APOLLO,           DPd vs Pd,       Refractory to R,        PFS,     0.36,  0.15,  0.83,  .,      p. 808, .
+Dimopoulos, 2021, APOLLO,           DPd vs Pd,       Not refractory to R,    PFS,     0.66,  0.49,  0.90,  .,      p. 808, .
+Hou,        2017, China Cont.,      IRd vs Rd,       Previous IMiD use,      PFS,     0.553, 0.328, 0.931, .,      Fig. 2, .
+Hou,        2017, China Cont.,      IRd vs Rd,       No IMiD use,            PFS,     0.766, 0.148, 3.964, .,      Fig. 2, .
+Hou,        2017, China Cont.,      IRd vs Rd,       Previous IMiD use,      OS,      0.398, 0.220, 0.719, .,      Fig. 3, .
+Hou,        2017, China Cont.,      IRd vs Rd,       No IMiD use,            OS,      0.498, 0.103, 2.403, .,      Fig. 3, .
+Jakubowiak, 2016, NCT01478048,      EVd vs Vd,       Previous IMiD use,      PFS,     0.87,  0.58,  1.29,  .,      Fig. 2, .
+Jakubowiak, 2016, NCT01478048,      EVd vs Vd,       No IMiD use,            PFS,     0.39,  0.19,  0.80,  .,      Fig. 2, .
+Kumar,      2020, BELLINI,          VeVd vs Vd,      Naive,                  PFS,     0.61,  0.31,  1.17,  .,      Fig. S3,.
+Kumar,      2020, BELLINI,          VeVd vs Vd,      Refractory to IMiD,     PFS,     0.75,  0.41,  1.36,  .,      Fig. S3,.
+Kumar,      2020, BELLINI,          VeVd vs Vd,      Naive,                  OS,      5.90,  0.76,  46.1,  .,      Fig. S4,.
+Kumar,      2020, BELLINI,          VeVd vs Vd,      Refractory to IMiD,     OS,      1.82,  0.65,  5.14,  .,      Fig. S4,.
+Lonial,     2015, ELOQUENT-2,       ELd vs Ld,       Previous R use,         PFS,     0.59,  0.25,  1.40,  .,      Fig. 1, .
+Lonial,     2015, ELOQUENT-2,       ELd vs Ld,       No previous R use,      PFS,     0.70,  0.57,  0.87,  .,      Fig. 1, .
+Lu,         2021, LEPUS,            DVd vs Vd,       Refractory to IMiD,     PFS,     0.39,  0.22,  0.69,  .,      Fig. 2, .
+Lu,         2021, LEPUS,            DVd vs Vd,       Not refractory to IMiD, PFS,     0.16,  0.07,  0.40,  .,      Fig. 2, .
+Mateos,     2020, CASTOR,           DVd vs Vd,       Refractory to IMiD,     PFS,     0.46,  0.31,  0.66,  .,      Fig. 2, .
+Mateos,     2020, CASTOR,           DVd vs Vd,       Not refractory to IMiD, PFS,     0.30,  0.20,  0.45,  .,      Fig. 2, .
+Moreau,     2021, IKEMA,            IsKd vs Kd,      Refractory to R,        PFS,     0.50,  0.34,  1.06,  .,      Fig. 3, .
+Moreau,     2021, IKEMA,            IsKd vs Kd,      Not refractory to R,    PFS,     0.48,  0.30,  0.77,  .,      Fig. 3, .
+Orlowski,   2007, NCT00103506,      V vs DoxV,       Previous R or T use,    PFS,     1.62,  1.08,  2.41,  .,      Fig. 3, .
+Orlowski,   2007, NCT00103506,      V vs DoxV,       No previous R or T use, PFS,     2.01,  1.42,  2.84,  .,      Fig. 3, .
+Orlowski,   2016, NCT00103506,      V vs DoxV,       Previous R or T use,    OS,      0.960, 0.734, 1.256, .       Fig. 3, .
+Orlowski,   2016, NCT00103506,      V vs DoxV,       No previous R or T use, OS,      1.080, 0.856, 1.361, .       Fig. 3, .
+Orlowski,   2019, ENDEAVOR,         Kd vs Vd,        Previous R use,         OS,      0.877, 0.665, 1.156, .,      Fig. 3, .
+Orlowski,   2019, ENDEAVOR,         Kd vs Vd,        No previous R use,      OS,      0.684, 0.535, 0.875, .,      Fig. 3, .
+Orlowski,   2019, ENDEAVOR,         Kd vs Vd,        Refractory to R,        OS,      0.857, 0.623, 1.178, .,      Fig. 3, .
+Palumbo,    2016, CASTOR,           DVd vs Vd,       Refractory to IMiD,     PFS,     0.50,  0.31,  0.80,  .,      Fig. 2, .
+Palumbo,    2016, CASTOR,           DVd vs Vd,       Not refractory to IMiD, PFS,     0.32,  0.18,  0.59,  .,      Fig. 2, .
+Richardson, 2019, OPTIMISMM,        PVd vs Vd,       Refractory to R,        PFS,     0.65,  0.50,  0.84,  .,      Fig. 3, .
+Richardson, 2019, OPTIMISMM,        PVd vs Vd,       Not refractory to R,    PFS,     0.48,  0.30,  0.75,  .,      Fig. 3, .
+Richardson, 2021, TOURMALINE-MM1,   IRd vs Rd,       Refractory to T,        OS,      0.781, 0.461, 1.322, .,      Fig. 2, .
+Richardson, 2021, TOURMALINE-MM1,   IRd vs Rd,       Not refractory to T,    OS,      0.975, 0.804, 1.183, .,      Fig. 2, .
+San-Miguel, 2016, PANORAMA 1,       FVd vs Vd,       Previous IMiD use,      OS,      0.93,  0.66,  1.31,  .,      Fig. 3, .
+San-Miguel, 2016, PANORAMA 1,       FVd vs Vd,       No previous IMiD use,   OS,      0.94,  0.74,  1.19,  .,      Fig. 3, .
+Stewart,    2015, ASPIRE,           KRd vs Rd,       Refractory to IMiD,     PFS,     0.64,  0.44,  0.91,  .,      Fig. 1, .
+Stewart,    2015, ASPIRE,           KRd vs Rd,       Not refractory to IMiD, PFS,     0.72,  0.58,  0.90,  .,      Fig. 1, .
+Usmani,     2022, CANDOR,           DKd vs Kd,       Refractory to R,        PFS,     0.46,  0.28,  0.73,  .,      Fig. 3, .
+Usmani,     2022, CANDOR,           DKd vs Kd,       Not refractory to R,    PFS,     0.63,  0.44,  0.90,  .,      Fig. 3, .
