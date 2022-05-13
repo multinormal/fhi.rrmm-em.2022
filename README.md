@@ -1,4 +1,4 @@
-# Data and code for Effect Modification in RRMM
+# Effect Modification in RRMM
 
 This repository contains data and code for a systematic review, meta-analysis,
 and simulation study on possible treatment effect modification of HR for
