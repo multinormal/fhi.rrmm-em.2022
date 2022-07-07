@@ -27,8 +27,8 @@ local refract_var refract
 // with lots of studies and estimates are too long to be readable).
 local studies_per_panel 3
 
-// Keep track of generate figure file names and numbers.
-global figures ""
+// Define the figure file types to export.
+local exts png eps
 
 foreach factor of global factors {
   frame create `factor'
@@ -97,9 +97,11 @@ foreach factor of global factors {
            nogmarkers /// Do not show the study-level meta-analysis estimates.
            nullrefline ///
            title("Hazard ratio for `outcome' by study and ``factor'_title'")
-      local this_figure "products/`factor'_`outcome'_single_panel.png"
-      global figures "$figures `this_figure'"
-      graph export "`this_figure'", replace width(3000)
+      foreach ext of local exts {
+        local this_figure "products/`factor'_`outcome'_single_panel.`ext'"
+        local width = cond("`ext'" == "eps", "", "width(3000)")
+        graph export "`this_figure'", replace `width'
+      }
 
       // Make a plot for each panel (i.e., split up the potentially long plot).
       levelsof `panel' if `predicate'
@@ -111,9 +113,11 @@ foreach factor of global factors {
              nonotes         ///
              crop(0.03125 4) ///
              xscale(range(0.03125 4)) xlabel(0.03125 "1/32" 0.125 "1/8" 0.5 "1/2" 2 "2")
-        local this_figure "products/`factor'_`outcome'_panel_`this_panel'.png"
-        global figures "$figures `this_figure'"
-        graph export "`this_figure'", replace width(3000)
+        foreach ext of local exts {
+          local this_figure "products/`factor'_`outcome'_panel_`this_panel'.`ext'"
+          local width = cond("`ext'" == "eps", "", "width(3000)")
+          graph export "`this_figure'", replace `width'
+        }
       }
     }
 
@@ -156,9 +160,11 @@ foreach factor of global factors {
              nogbhomtests transform("Ratio of Hazard Ratios":exp)              ///
              nullrefline                                                       ///
              title("Ratio of hazard ratios for `outcome' with respect to ``factor'_title'")
-        local this_figure "products/`factor'_rel_`outcome'.png"
-        global figures "$figures `this_figure'"
-        graph export "`this_figure'", replace width(3000)
+        foreach ext of local exts {
+          local this_figure "products/`factor'_rel_`outcome'.`ext'"
+          local width = cond("`ext'" == "eps", "", "width(3000)")
+          graph export "`this_figure'", replace `width'
+        }
 
         // Make a compact (rather than long and thin) plot suitable for inclusion
         // in a journal paper.
@@ -170,9 +176,11 @@ foreach factor of global factors {
              nogbhomtests transform("Mean RHR":exp)                           ///
              nullrefline                                                      ///
              title("Ratio of hazard ratios for `outcome' (``factor'_title')")
-        local this_figure "products/compact_`factor'_rel_`outcome'.png"
-        global figures "$figures `this_figure'"
-        graph export "`this_figure'", replace width(3000)
+        foreach ext of local exts {
+          local this_figure "products/compact_`factor'_rel_`outcome'.`ext'"
+          local width = cond("`ext'" == "eps", "", "width(3000)")
+          graph export "`this_figure'", replace `width'
+        }
 
         // NOTE: ORIGINAL DATA ON RHR IS REPLACED BY STATSBY RESULTS.
       }
