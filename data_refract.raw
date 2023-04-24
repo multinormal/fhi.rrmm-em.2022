@@ -1,4 +1,4 @@
-author,     year, trial,            comparison,      refract,                outcome, e1,   n1,   e2,   n2,   N,     hr,    hr_lb, hr_ub, pval,   source, notes
+author,     year, trial,            comparison,      refract,                outcome, e1,   n1,   e2,   n2,   n,     hr,    hr_lb, hr_ub, pval,   source, notes
 Attal,      2019, ICARIA-MM,        IsPd vs Pd,      Refractory to R,        PFS,     72,   144,  82,   140,  .,     0.59,  0.43,  0.82,  .,      Fig. 3, .
 Attal,      2019, ICARIA-MM,        IsPd vs Pd,      Not refractory to R,    PFS,     1,    10,   7,    13,   .,     0.18,  0.02,  1.49,  .,      Fig. 3, .
 Bahlis,     2020, POLLUX,           DRd vs Rd,       Previous R use,         PFS,     25,   50,   38,   50,   .,     0.38,  0.21,  0.66,  .,      Fig. 2, .

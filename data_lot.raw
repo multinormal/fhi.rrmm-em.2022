@@ -1,4 +1,4 @@
-author,     year, trial,            comparison,      lot,  outcome, e1,   n1,   e2,   n2,   N,    hr,    hr_lb, hr_ub, pval,   source, notes
+author,     year, trial,            comparison,      lot,  outcome, e1,   n1,   e2,   n2,   n,    hr,    hr_lb, hr_ub, pval,   source, notes
 Attal,      2019, ICARIA-MM,        IsPd vs Pd,      2-3,  PFS,     44,   102,  57,   101,  .,    0.59,  0.40,  0.88,  .,      Fig. 3, Interaction p-val is 0.9583
 Attal,      2019, ICARIA-MM,        IsPd vs Pd,      >3,   PFS,     29,   52,   32,   52,   .,    0.59,  0.36,  0.98,  .,      Fig. 3, Interaction p-val is 0.9583
 Bahlis,     2020, POLLUX,           DRd vs Rd,       1,    PFS,     62,   149, 98,    146,  .,    0.42,  0.30,  0.58,  .,      Fig. 2, .
