@@ -125,10 +125,13 @@ foreach factor of global factors {
       // Make a plot for each panel (i.e., split up the potentially long plot).
       levelsof `panel' if `predicate'
       foreach this_panel in `r(levels)' {
-        meta forest _id _plot _esci if `predicate' & `panel' == `this_panel', subgroup(Study) ///
+        meta forest _id _plot en1 en2 n _esci if `predicate' & `panel' == `this_panel', subgroup(Study) ///
              nogbhomtests nooverall noohetstats noohomtest transform("Hazard Ratio":exp) ///
              nogmarkers      /// Do not show the study-level meta-analysis estimates.
              nullrefline     ///
+             columnopts(_id, title("`:variable label Study'")) ///
+             columnopts(en1, title("Treatment 1") supertitle("Events / Patients")) ///
+             columnopts(en2, title("Treatment 2") supertitle("Events / Patients")) ///
              nonotes         ///
              crop(0.03125 4) ///
              xscale(range(0.03125 4)) xlabel(0.03125 "1/32" 0.125 "1/8" 0.5 "1/2" 2 "2")
