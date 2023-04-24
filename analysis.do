@@ -51,16 +51,16 @@ foreach factor of global factors {
     replace ``factor'_var' = strtrim(``factor'_var')
 
     // Label the variables that get exposed in plots or exported data.
-    label variable Study            "Study"
+    label variable Study            "Study: Treatment 1 vs Treatment 2"
     label variable Comparison       "Comparison"
     local factor_var_label        = strproper("``factor'_var'")
     label variable ``factor'_var'   "`factor_val_label'"
     label variable outcome          "Outcome"
-    label variable e1               "Events (arm 1)"           // Arm 1 is the treatment named on the left in the comparison variable.
-    label variable n1               "Participants (arm 1)"     // Arm 1 is the treatment named on the left in the comparison variable.
-    label variable e2               "Events (arm 2)"           // Arm 2 is the treatment named on the right in the comparison variable.
-    label variable n2               "Participants (arm 2)"     // Arm 2 is the treatment named on the right in the comparison variable.
-    label variable n                "Participants in subgroup" // Total patients in a subgroup.
+    label variable e1               "Events (arm 1)"   // Arm 1 is the treatment named on the left in the comparison variable.
+    label variable n1               "Patients (arm 1)" // Arm 1 is the treatment named on the left in the comparison variable.
+    label variable e2               "Events (arm 2)"   // Arm 2 is the treatment named on the right in the comparison variable.
+    label variable n2               "Patients (arm 2)" // Arm 2 is the treatment named on the right in the comparison variable.
+    label variable n                "Patients"         // Total patients in a subgroup.
     label variable hr               "HR"
     label variable hr_lb            "Lower 95% CI Bound on HR"
     label variable hr_ub            "Upper 95% CI Bound on HR"
@@ -87,6 +87,14 @@ foreach factor of global factors {
     // Compute total numbers of participants included in subgroup analyses if possible and not given.
     replace n = n1 + n2 if !missing(n1) & !missing(n2) & missing(n)
 
+    // Make string columns with numbers of events and participants.
+    tostring e1 e2 n1 n2 , replace
+    forvalue arm = 1/2 {
+      replace e`arm' = "-" if e`arm' == "."
+      replace n`arm' = "-" if n`arm' == "."
+      generate en`arm' = e`arm' + " / " + n`arm'
+    }
+
     // Perform meta-analyses of log HR (for OS and PFS) subgrouped by study.
     foreach outcome of global outcomes {
       local predicate outcome == "`outcome'"
@@ -100,10 +108,13 @@ foreach factor of global factors {
       meta set log_hr se, studylabel(``factor'_var')
 
       // Make a single, potentially long forest plot.
-      meta forest _id _plot _esci if `predicate', subgroup(Study) ///
+      meta forest _id _plot en1 en2 n _esci if `predicate', subgroup(Study) ///
            nogbhomtests nooverall noohetstats noohomtest transform("Hazard Ratio":exp) ///
            nogmarkers /// Do not show the study-level meta-analysis estimates.
            nullrefline ///
+           columnopts(_id, title("`:variable label Study'")) ///
+           columnopts(en1, title("Treatment 1") supertitle("Events / Patients")) ///
+           columnopts(en2, title("Treatment 2") supertitle("Events / Patients")) ///
            title("Hazard ratio for `outcome' by study and ``factor'_title'")
       foreach ext of local exts {
         local this_figure "products/`factor'_`outcome'_single_panel.`ext'"
