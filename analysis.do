@@ -56,6 +56,11 @@ foreach factor of global factors {
     local factor_var_label        = strproper("``factor'_var'")
     label variable ``factor'_var'   "`factor_val_label'"
     label variable outcome          "Outcome"
+    label variable e1               "Events (arm 1)"           // Arm 1 is the treatment named on the left in the comparison variable.
+    label variable n1               "Participants (arm 1)"     // Arm 1 is the treatment named on the left in the comparison variable.
+    label variable e2               "Events (arm 2)"           // Arm 2 is the treatment named on the right in the comparison variable.
+    label variable n2               "Participants (arm 2)"     // Arm 2 is the treatment named on the right in the comparison variable.
+    label variable n                "Participants in subgroup" // Total patients in a subgroup.
     label variable hr               "HR"
     label variable hr_lb            "Lower 95% CI Bound on HR"
     label variable hr_ub            "Upper 95% CI Bound on HR"
@@ -78,6 +83,9 @@ foreach factor of global factors {
     assert   log_lb < log_hr
     assert   log_hr < log_ub
     generate se     = (log_ub - log_lb) / (2 * 1.96)
+
+    // Compute total numbers of participants included in subgroup analyses if possible and not given.
+    replace n = n1 + n2 if !missing(n1) & !missing(n2) & missing(n)
 
     // Perform meta-analyses of log HR (for OS and PFS) subgrouped by study.
     foreach outcome of global outcomes {
