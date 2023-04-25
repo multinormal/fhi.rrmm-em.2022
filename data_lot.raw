@@ -27,8 +27,8 @@ Hou,        2017, China Cont.,      IRd vs Rd,       3,    PFS,     6,    12,  6
 Hou,        2017, China Cont.,      IRd vs Rd,       1,    OS,      8,    25,  13,    26,   .,    0.521, 0.216, 1.258, .,      Fig. 3, .
 Hou,        2017, China Cont.,      IRd vs Rd,       2,    OS,      10,   20,  18,    24,   .,    0.386, 0.172, 0.869, .,      Fig. 3, .
 Hou,        2017, China Cont.,      IRd vs Rd,       3,    OS,      3,    12,  5,     8,    .,    0.336, 0.079, 1.421, .,      Fig. 3, .
-Jakubowiak, 2016, NCT01478048,      EVd vs Vd,       1,    PFS,     .,    50,  .,     51,   .,    0.74,  0.48,  1.13,  .,      Fig. 2, .
-Jakubowiak, 2016, NCT01478048,      EVd vs Vd,       2-3,  PFS,     .,    27,  .,     24,   .,    0.76,  0.43,  1.35,  .,      Fig. 2, .
+Jakubowiak, 2016, NCT01478048,      EVd vs Vd,       1,    PFS,     .,    50,  .,     51,   .,    0.68,  0.42,  1.09,  .,      Fig. 2, .
+Jakubowiak, 2016, NCT01478048,      EVd vs Vd,       2-3,  PFS,     .,    27,  .,     24,   .,    0.72,  0.39,  1.35,  .,      Fig. 2, .
 Kumar,      2020, BELLINI,          VeVd vs Vd,      1,    PFS,     .,    .,   .,     .,    135,  0.75,  0.45,  1.26,  .,      Fig. S3,.
 Kumar,      2020, BELLINI,          VeVd vs Vd,      2-3,  PFS,     .,    .,   .,     .,    156,  0.54,  0.33,  0.88,  .,      Fig. S3,.
 Kumar,      2020, BELLINI,          VeVd vs Vd,      1,    OS,      .,    .,   .,     .,    135,  1.67,  0.61,  4.55,  .,      Fig. S4,.
