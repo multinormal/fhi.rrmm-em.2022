@@ -108,7 +108,7 @@ foreach factor of global factors {
     // TODO: Document this, which preserves the original order after the sort.
     tempvar idx
     generate `idx' = _n
-    bysort Study: egen total_n = total(n)
+    bysort Study outcome: egen total_n = total(n)
     label variable total_n "Patients"
     sort `idx'
 
