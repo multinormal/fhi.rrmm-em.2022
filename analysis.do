@@ -214,10 +214,10 @@ foreach factor of global factors {
         // in a journal paper.
         statsby , by(Study) clear : mymeta total_n
         meta set theta se, studylabel(Study)
-        meta forest _id N _plot total_n _esci p,                             ///
+        meta forest _id _plot _esci N total_n p _weight,                      ///
              columnopts(_id, title("`:variable label Study'"))                ///
              columnopts(N, title("RHRs"))                                     ///
-             columnopts(total_n, title("Patients"))                          ///
+             columnopts(total_n, title("  Patients"))                         ///
              columnopts(p, title("{it:p}-value") format("%9.3f"))             ///
              nogbhomtests transform("Mean RHR":exp)                           ///
              nullrefline                                                      ///
