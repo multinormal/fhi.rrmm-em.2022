@@ -36,7 +36,7 @@ local exts png eps
 // within a particular call of the function by -statsby-.
 program define mymeta, rclass
   version 16.1
-  syntax varname [if] [in] // TODO: Can we remove [in]?
+  syntax varname [if]
   summarize `varlist' `if' `in'
   local sum = r(mean) // Use of mean prevents counting multiple totals.
   return scalar `varlist' = `sum'
@@ -102,7 +102,8 @@ foreach factor of global factors {
     replace n = n1 + n2 if !missing(n1) & !missing(n2) & missing(n)
 
     // Compute the total number of patients included in subgroup analyses in each study.
-    // TODO: Document this, which preserves the original order after the sort.
+    // The total is computed for each combination of study and outcome. The original
+    // order of the observations is restored after the sorting.
     tempvar idx
     generate `idx' = _n
     bysort Study outcome: egen total_n = total(n)
