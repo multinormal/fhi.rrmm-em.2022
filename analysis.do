@@ -30,6 +30,20 @@ local studies_per_panel 3
 // Define the figure file types to export.
 local exts png eps
 
+// Create a wrapper around -meta summarize- that can be used within a call to -statsby-,
+// and that, in addition to returning whatever -meta summarize- returns in r(), also
+// returns the value of a specified variable, whose values are assumed to be constant
+// within a particular call of the function by -statsby-.
+program define mymeta, rclass
+  version 16.1
+  syntax varname [if]
+  summarize `varlist' `if' `in'
+  local sum = r(mean) // Use of mean prevents counting multiple totals.
+  return scalar `varlist' = `sum'
+  meta summarize `if' `in'
+  return add
+end
+
 foreach factor of global factors {
   frame create `factor'
   frame `factor' {
@@ -51,11 +65,16 @@ foreach factor of global factors {
     replace ``factor'_var' = strtrim(``factor'_var')
 
     // Label the variables that get exposed in plots or exported data.
-    label variable Study            "Study"
+    label variable Study            "Study: Treatment 1 vs Treatment 2"
     label variable Comparison       "Comparison"
     local factor_var_label        = strproper("``factor'_var'")
     label variable ``factor'_var'   "`factor_val_label'"
     label variable outcome          "Outcome"
+    label variable e1               "Events (arm 1)"   // Arm 1 is the treatment named on the left in the comparison variable.
+    label variable n1               "Patients (arm 1)" // Arm 1 is the treatment named on the left in the comparison variable.
+    label variable e2               "Events (arm 2)"   // Arm 2 is the treatment named on the right in the comparison variable.
+    label variable n2               "Patients (arm 2)" // Arm 2 is the treatment named on the right in the comparison variable.
+    label variable n                "Patients"         // Total patients in a subgroup.
     label variable hr               "HR"
     label variable hr_lb            "Lower 95% CI Bound on HR"
     label variable hr_ub            "Upper 95% CI Bound on HR"
@@ -79,6 +98,26 @@ foreach factor of global factors {
     assert   log_hr < log_ub
     generate se     = (log_ub - log_lb) / (2 * 1.96)
 
+    // Compute total numbers of patients included in subgroup analyses if possible and not given.
+    replace n = n1 + n2 if !missing(n1) & !missing(n2) & missing(n)
+
+    // Compute the total number of patients included in subgroup analyses in each study.
+    // The total is computed for each combination of study and outcome. The original
+    // order of the observations is restored after the sorting.
+    tempvar idx
+    generate `idx' = _n
+    bysort Study outcome: egen total_n = total(n)
+    label variable total_n "Patients"
+    sort `idx'
+
+    // Make string columns with numbers of events and participants.
+    tostring e1 e2 n1 n2 , replace
+    forvalues arm = 1/2 {
+      replace e`arm' = "-" if e`arm' == "."
+      replace n`arm' = "-" if n`arm' == "."
+      generate en`arm' = e`arm' + " / " + n`arm'
+    }
+
     // Perform meta-analyses of log HR (for OS and PFS) subgrouped by study.
     foreach outcome of global outcomes {
       local predicate outcome == "`outcome'"
@@ -92,10 +131,13 @@ foreach factor of global factors {
       meta set log_hr se, studylabel(``factor'_var')
 
       // Make a single, potentially long forest plot.
-      meta forest _id _plot _esci if `predicate', subgroup(Study) ///
+      meta forest _id _plot en1 en2 n _esci if `predicate', subgroup(Study) ///
            nogbhomtests nooverall noohetstats noohomtest transform("Hazard Ratio":exp) ///
            nogmarkers /// Do not show the study-level meta-analysis estimates.
            nullrefline ///
+           columnopts(_id, title("`:variable label Study'")) ///
+           columnopts(en1, title("Treatment 1") supertitle("Events / Patients")) ///
+           columnopts(en2, title("Treatment 2") supertitle("Events / Patients")) ///
            title("Hazard ratio for `outcome' by study and ``factor'_title'")
       foreach ext of local exts {
         local this_figure "products/`factor'_`outcome'_single_panel.`ext'"
@@ -106,10 +148,13 @@ foreach factor of global factors {
       // Make a plot for each panel (i.e., split up the potentially long plot).
       levelsof `panel' if `predicate'
       foreach this_panel in `r(levels)' {
-        meta forest _id _plot _esci if `predicate' & `panel' == `this_panel', subgroup(Study) ///
+        meta forest _id _plot en1 en2 n _esci if `predicate' & `panel' == `this_panel', subgroup(Study) ///
              nogbhomtests nooverall noohetstats noohomtest transform("Hazard Ratio":exp) ///
              nogmarkers      /// Do not show the study-level meta-analysis estimates.
              nullrefline     ///
+             columnopts(_id, title("`:variable label Study'")) ///
+             columnopts(en1, title("Treatment 1") supertitle("Events / Patients")) ///
+             columnopts(en2, title("Treatment 2") supertitle("Events / Patients")) ///
              nonotes         ///
              crop(0.03125 4) ///
              xscale(range(0.03125 4)) xlabel(0.03125 "1/32" 0.125 "1/8" 0.5 "1/2" 2 "2")
@@ -168,13 +213,17 @@ foreach factor of global factors {
 
         // Make a compact (rather than long and thin) plot suitable for inclusion
         // in a journal paper.
-        statsby, by(Study) clear: meta summarize
+        statsby , by(Study) clear : mymeta total_n
         meta set theta se, studylabel(Study)
-        meta forest _id N _plot _esci p,                                      ///
-             columnopts(N, title("RHRs"))                                     ///
-             columnopts(p, title("{it:p}-value") format("%9.3f"))             ///
-             nogbhomtests transform("Mean RHR":exp)                           ///
-             nullrefline                                                      ///
+        generate spacer = ""
+        meta forest _id _plot _esci spacer N total_n p _weight,                  ///
+             columnopts(_id, title("`:variable label Study'"))                   ///
+             columnopts(N, supertitle("RHRs") title(""))                         ///
+             columnopts(spacer, title("   "))                                    ///
+             columnopts(total_n, supertitle("  Patients") title(""))             ///
+             columnopts(p, supertitle("{it:p}-value") title("") format("%9.3f")) ///
+             nogbhomtests transform("Mean RHR":exp)                              ///
+             nullrefline                                                         ///
              title("Ratio of hazard ratios for `outcome' (``factor'_title')")
         foreach ext of local exts {
           local this_figure "products/compact_`factor'_rel_`outcome'.`ext'"
