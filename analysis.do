@@ -30,6 +30,23 @@ local studies_per_panel 3
 // Define the figure file types to export.
 local exts png eps
 
+// Create a wrapper around -meta summarize- that can be used within a call to -statsby-,
+// and that, in addition to returning whatever -meta summarize- returns in r(), also
+// returns the value of a specified variable, whose values are assumed to be constant
+// within a particular call of the function by -statsby-.
+program define mymeta, rclass
+  version 16.1
+  syntax varname [if] [in] // TODO: Can we remove [in]?
+  // TODO: Ensure uniqueness of the variable?
+
+  summarize `varlist' `if' `in'
+  local sum = r(sum)
+  return scalar `varlist' = `sum'
+  
+  meta summarize `if' `in'
+  return add
+end
+
 foreach factor of global factors {
   frame create `factor'
   frame `factor' {
@@ -84,12 +101,20 @@ foreach factor of global factors {
     assert   log_hr < log_ub
     generate se     = (log_ub - log_lb) / (2 * 1.96)
 
-    // Compute total numbers of participants included in subgroup analyses if possible and not given.
+    // Compute total numbers of patients included in subgroup analyses if possible and not given.
     replace n = n1 + n2 if !missing(n1) & !missing(n2) & missing(n)
+
+    // Compute the total number of patients included in subgroup analyses in each study.
+    // TODO: Document this, which preserves the original order after the sort.
+    tempvar idx
+    generate `idx' = _n
+    bysort Study: egen total_n = total(n)
+    label variable total_n "Patients"
+    sort `idx'
 
     // Make string columns with numbers of events and participants.
     tostring e1 e2 n1 n2 , replace
-    forvalue arm = 1/2 {
+    forvalues arm = 1/2 {
       replace e`arm' = "-" if e`arm' == "."
       replace n`arm' = "-" if n`arm' == "."
       generate en`arm' = e`arm' + " / " + n`arm'
@@ -190,10 +215,13 @@ foreach factor of global factors {
 
         // Make a compact (rather than long and thin) plot suitable for inclusion
         // in a journal paper.
-        statsby, by(Study) clear: meta summarize
+        statsby , by(Study) clear : mymeta n
         meta set theta se, studylabel(Study)
-        meta forest _id N _plot _esci p,                                      ///
+        rename n patients // Can't use the name n in -meta forest- and give the column a title.
+        meta forest _id N _plot patients _esci p,                             ///
+             columnopts(_id, title("`:variable label Study'"))                ///
              columnopts(N, title("RHRs"))                                     ///
+             columnopts(patients, title("Patients"))                          ///
              columnopts(p, title("{it:p}-value") format("%9.3f"))             ///
              nogbhomtests transform("Mean RHR":exp)                           ///
              nullrefline                                                      ///
