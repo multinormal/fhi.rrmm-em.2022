@@ -214,13 +214,15 @@ foreach factor of global factors {
         // in a journal paper.
         statsby , by(Study) clear : mymeta total_n
         meta set theta se, studylabel(Study)
-        meta forest _id _plot _esci N total_n p _weight,                      ///
-             columnopts(_id, title("`:variable label Study'"))                ///
-             columnopts(N, title("RHRs"))                                     ///
-             columnopts(total_n, title("  Patients"))                         ///
-             columnopts(p, title("{it:p}-value") format("%9.3f"))             ///
-             nogbhomtests transform("Mean RHR":exp)                           ///
-             nullrefline                                                      ///
+        generate spacer = ""
+        meta forest _id _plot _esci spacer N total_n p _weight,                  ///
+             columnopts(_id, title("`:variable label Study'"))                   ///
+             columnopts(N, supertitle("RHRs") title(""))                         ///
+             columnopts(spacer, title("   "))                                    ///
+             columnopts(total_n, supertitle("  Patients") title(""))             ///
+             columnopts(p, supertitle("{it:p}-value") title("") format("%9.3f")) ///
+             nogbhomtests transform("Mean RHR":exp)                              ///
+             nullrefline                                                         ///
              title("Ratio of hazard ratios for `outcome' (``factor'_title')")
         foreach ext of local exts {
           local this_figure "products/compact_`factor'_rel_`outcome'.`ext'"
