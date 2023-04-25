@@ -37,12 +37,9 @@ local exts png eps
 program define mymeta, rclass
   version 16.1
   syntax varname [if] [in] // TODO: Can we remove [in]?
-  // TODO: Ensure uniqueness of the variable?
-
   summarize `varlist' `if' `in'
-  local sum = r(sum)
+  local sum = r(mean) // Use of mean prevents counting multiple totals.
   return scalar `varlist' = `sum'
-  
   meta summarize `if' `in'
   return add
 end
@@ -215,13 +212,12 @@ foreach factor of global factors {
 
         // Make a compact (rather than long and thin) plot suitable for inclusion
         // in a journal paper.
-        statsby , by(Study) clear : mymeta n
+        statsby , by(Study) clear : mymeta total_n
         meta set theta se, studylabel(Study)
-        rename n patients // Can't use the name n in -meta forest- and give the column a title.
-        meta forest _id N _plot patients _esci p,                             ///
+        meta forest _id N _plot total_n _esci p,                             ///
              columnopts(_id, title("`:variable label Study'"))                ///
              columnopts(N, title("RHRs"))                                     ///
-             columnopts(patients, title("Patients"))                          ///
+             columnopts(total_n, title("Patients"))                          ///
              columnopts(p, title("{it:p}-value") format("%9.3f"))             ///
              nogbhomtests transform("Mean RHR":exp)                           ///
              nullrefline                                                      ///
