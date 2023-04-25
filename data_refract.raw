@@ -42,8 +42,8 @@ Richardson, 2019, OPTIMISMM,        PVd vs Vd,       Refractory to R,        PFS
 Richardson, 2019, OPTIMISMM,        PVd vs Vd,       Not refractory to R,    PFS,     34,   81,   44,   87,   .,     0.48,  0.30,  0.75,  .,      Fig. 3, .
 Richardson, 2021, TOURMALINE-MM1,   IRd vs Rd,       Refractory to T,        OS,      26,   39,   36,   50,   .,     0.781, 0.461, 1.322, .,      Fig. 2, .
 Richardson, 2021, TOURMALINE-MM1,   IRd vs Rd,       Not refractory to T,    OS,      214,  321,  208,  312,  .,     0.975, 0.804, 1.183, .,      Fig. 2, .
-San-Miguel, 2016, PANORAMA 1,       FVd vs Vd,       Previous IMiD use,      OS,      .,    .,    .,    .,    283,   0.93,  0.66,  1.31,  .,      Fig. 3, .
-San-Miguel, 2016, PANORAMA 1,       FVd vs Vd,       No previous IMiD use,   OS,      .,    .,    .,    .,    485,   0.94,  0.74,  1.19,  .,      Fig. 3, .
+San-Miguel, 2016, PANORAMA 1,       FVd vs Vd,       Previous IMiD use,      OS,      .,    .,    .,    .,    485,   0.94,  0.74,  1.19,  .,      Fig. 3, .
+San-Miguel, 2016, PANORAMA 1,       FVd vs Vd,       No previous IMiD use,   OS,      .,    .,    .,    .,    283,   0.93,  0.66,  1.31,  .,      Fig. 3, .
 Stewart,    2015, ASPIRE,           KRd vs Rd,       Refractory to IMiD,     PFS,     .,    85,   .,    88,   .,     0.64,  0.44,  0.91,  .,      Fig. 1, .
 Stewart,    2015, ASPIRE,           KRd vs Rd,       Not refractory to IMiD, PFS,     .,    311,  .,    308,  .,     0.72,  0.58,  0.90,  .,      Fig. 1, .
 Usmani,     2022, CANDOR,           DKd vs Kd,       Refractory to R,        PFS,     46,   99,   35,   55,   .,     0.46,  0.28,  0.73,  .,      Fig. 3, .
