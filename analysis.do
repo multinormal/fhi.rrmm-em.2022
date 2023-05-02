@@ -250,8 +250,10 @@ frame sizes {
   // Perform exploratory logistic regressions.
   foreach factor of global factors {
     foreach outcome of global outcomes {
+      disp "{hline}"
+      disp as result "Exploratory analysis for `factor' and `outcome'"
       local outcome = lower("`outcome'")
-      logit `factor'_`outcome' patients
+      logit `factor'_`outcome' patients if `factor'_could
       assert e(converged)
       test patients
       assert r(p) > 0.05
