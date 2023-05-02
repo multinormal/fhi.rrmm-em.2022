@@ -1,0 +1,43 @@
+author,     year, trial,              patients, refract_os, refract_pfs, lot_os, lot_pfs
+Attal,      2019, ICARIA-MM,          307,      0,          1,            0,     1
+Bahlis,     2020, POLLUX,             569,      0,          1,            0,     1
+Dimopoulos, 2007, MM-010,             351,      0,          0,            0,     0
+Dimopoulos, 2013, VANTAGE 088,        637,      0,          1,            0,     1
+Dimopoulos, 2016, ENDEAVOR,           929,      0,          1,            0,     1
+Dimopoulos, 2018, ELOQUENT-3,         117,      0,          0,            0,     0
+Dimopoulos, 2020, ELOQUENT-2,         646,      0,          1,            0,     1
+Dimopoulos, 2021, APOLLO,             304,      0,          0,            0,     0
+Dimopoulos, 2021, .,                  165,      0,          0,            0,     0
+Garderet,   2012, MMVAR/IFM 2005-04,  269,      0,          0,            0,     0
+Grosicki,   2020, BOSTON,             402,      0,          1,            0,     1
+Hájek,      2017, FOCUS PX-171-011,   315,      0,          0,            0,     0
+Hou,        2017, China Cont. Study,  115,      1,          1,            1,     1
+Iida,       2018, .,                  44,       0,          0,            0,     0
+Jakubowiak, 2016, .,                  152,      0,          1,            0,     1
+Kropff,     2017, .,                  96,       0,          0,            0,     0
+Kumar,      2020, BELLINI,            291,      1,          1,            1,     1
+Lonial,     2015, ELOQUENT-2,         646,      0,          1,            0,     0
+Lu,         2021, LEPUS,              211,      0,          1,            0,     1
+Mateos,     2019, KEYNOTE-183,        249,      0,          0,            0,     0
+Mateos,     2020, CASTOR,             498,      0,          1,            0,     1
+Montefusco, 2020, .,                  155,      0,          0,            0,     0
+Moreau,     2016, TOURMALINE-MM1,     722,      0,          0,            0,     0
+Moreau,     2021, IKEMA,              302,      0,          0,            0,     0
+Orlowski,   2007, DOXIL-MMY-3021,     646,      0,          1,            0,     0
+Orlowski,   2015, .,                  281,      0,          0,            0,     0
+Orlowski,   2016, DOXIL-MMY-3021,     646,      1,          0,            0,     0
+Orlowski,   2019, ENDEAVOR,           929,      1,          0,            1,     0
+Palumbo,    2016, CASTOR,             498,      0,          1,            0,     1
+Raje,       2017, .,                  220,      0,          0,            0,     0
+Richardson, 2007, APEX,               669,      0,          0,            0,     0
+Richardson, 2014, MM-02,              221,      0,          0,            0,     0
+Richardson, 2019, OPTIMISMM,          559,      0,          1,            0,     1
+Richardson, 2021, TOURMALINE-MM1,     722,      1,          0,            1,     0
+San-Miguel, 2013, MM-03,              455,      0,          0,            1,     1
+San-Miguel, 2014, PANORAMA-1,         768,      0,          0,            0,     1
+San-Miguel, 2016, PANORAMA-1,         768,      1,          0,            1,     0
+Siegel,     2018, ASPIRE,             792,      0,          0,            1,     0
+Stewart,    2015, ASPIRE,             792,      0,          1,            0,     0
+Usmani,     2022, CANDOR,             466,      0,          1,            0,     1
+Weber,      2007, MM-09,              353,      0,          0,            0,     0
+White,      2013, AMBER,              102,      0,          0,            0,     0

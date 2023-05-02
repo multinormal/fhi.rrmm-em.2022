@@ -14,6 +14,10 @@ global factors lot refract
 local lot_file     "data_lot.raw"
 local refract_file "data_refract.raw"
 
+// Define the data file with sample sizes and indicators for
+// whether trials reported stratified estimates.
+local sizes_file "data_sizes.raw"
+
 // Define title fragments for the factors.
 local lot_title     "lines of treatment"
 local refract_title "refractory status"
@@ -234,6 +238,23 @@ foreach factor of global factors {
         // NOTE: ORIGINAL DATA ON RHR IS REPLACED BY STATSBY RESULTS.
       }
       frame drop `outcome'_tmp
+    }
+  }
+}
+
+// Explore the possibility that larger trials are more likely to report stratified estimates.
+frame create sizes
+frame sizes {
+  import delimited "`sizes_file'", varnames(1)
+
+  // Perform exploratory logistic regressions.
+  foreach factor of global factors {
+    foreach outcome of global outcomes {
+      local outcome = lower("`outcome'")
+      logit `factor'_`outcome' patients
+      assert e(converged)
+      test patients
+      assert r(p) > 0.05
     }
   }
 }
