@@ -257,12 +257,12 @@ run_experiment(n = n_rep) %>% kable()
 The function `proportion_plot()` runs a simulation study to estimate the proportion of NMA estimates that would be expected to differ for a range of values of RHR and plots the result. This code simulates a scenario in which there are 4 LOT categories, effect modification occurs in a uniform direction, and effect modification compounds (i.e., the worst-case in the main simulation).
 
 ```{r}
-proportion_plot <- function(n = n_rep, resolution = 20) {
+proportion_plot <- function(n = n_rep, resolution = 20, nl = 4, em = lot_em) {
   # A function to make em lists with a specific log RHR.
   make_em <- function(log_rhr) {
     # Return an em list with the specified log RHR and an
-    # SE equal to that imputed for lot_em.
-    list(mean = log_rhr, se = lot_em$se)
+    # SE equal to that for em.
+    list(mean = log_rhr, se = em$se)
   }
   
   # Define the range of log RHRs over which to plot the results.
@@ -273,7 +273,7 @@ proportion_plot <- function(n = n_rep, resolution = 20) {
   sim <- function(log_rhr) {
     sim_result <- simulation_study(n = floor(n / resolution),
                                    em = make_em(log_rhr = log_rhr),
-                                   nl = 4,
+                                   nl = nl,
                                    unif_dir = TRUE)
     prop <- binom.test(x = sim_result$sig, n = sim_result$n)
     list(rhr = exp(log_rhr),
@@ -295,23 +295,37 @@ proportion_plot <- function(n = n_rep, resolution = 20) {
 }
 ```
 
-Run simulations at each of a range of RHRs, estimating the percentage of NMA estimates that would be expected to differ significantly at each value of RHR.
+Run simulations at each of a range of RHRs, estimating the percentage of NMA estimates that would be expected to differ significantly at each value of RHR, for scenaious like that for LOT with 4 categories, and like that for refractory status.
 
 ```{r}
-proportion_plot_data <- proportion_plot(n = n_rep)
+lot_proportion_plot_data     <- proportion_plot(n = n_rep, nl = 4, em = lot_em)
+refract_proportion_plot_data <- proportion_plot(n = n_rep, nl = 2, em = pfs_em)
 ```
 
 Plot the results, with 95% confidence bands.
 
 ```{r}
-ggplot(proportion_plot_data, aes(x = rhr, y = sig / n)) +
-  geom_smooth(method = "glm", #family = binomial,
-              formula = y ~ splines::ns(x,8),
-              aes(weight = n)) +
-  xlab("Ratio of hazard ratios (RHR)") +
-  ylab("NMA results expected to differ (%)") +
-  scale_y_continuous(labels = scales::percent) +
-  theme_minimal()
+make_plot <- function(results, title, subtitle, ref_rhr) {
+  ggplot(results, aes(x = rhr, y = sig / n)) +
+    geom_smooth(method = "glm", #family = binomial,
+                formula = y ~ splines::ns(x,8),
+                aes(weight = n)) +
+    xlab("Ratio of hazard ratios (RHR)") +
+    ylab("NMA results expected to differ (%)") +
+    ggtitle(title, subtitle = subtitle) +
+    geom_vline(xintercept = ref_rhr, linetype="dashed") +
+    scale_y_continuous(labels = scales::percent, limits = c(-0.1,0.5)) +
+    theme_minimal()  
+}
+
+make_plot(lot_proportion_plot_data, title = "LOT-like Simulation", 
+          subtitle = "(4 categories, consistent direction of modification)",
+          ref_rhr = 1.19) %>% 
+  ggsave(filename = "../products/simulation-lot.png", width = 5, height = 3)
+make_plot(refract_proportion_plot_data, title = "Refractory-like Simulation",
+          subtitle = "(2 categories, consistent direction of modification)",
+          ref_rhr = 1.32) %>% 
+  ggsave(filename = "../products/simulation-refract.png", width = 5, height = 3)
 ```
 Look at the percent of NMA results that would be expected to differ at RHR = 1.19, which corresponds to the worst case estimate shown in Table 2 in the main paper. We see that the estimate here agrees reasonably well with that result (e.g., 4.48% is well inside the confidence band at RHR = 1.19). Note that the plot above accounts for the compounding over several levels of the potential effect modifier: if there was only two levels, as there is for refractory status, the percentage of NMA results expected to differ would be smaller.
 
