@@ -89,6 +89,8 @@ We also need to parameterize the distribution of effect modification. The estima
 ```{r}
 pfs_em <- list(mean = log(1.31), se = (log(1.47)-log(1.16))/(2*1.96))
 lot_em <- list(mean = log(1.19), se = (log(1.29)-log(1.09))/(2*1.96))
+pfs_em <- list(mean = log(1.32), se = (log(1.49)-log(1.18))/(2*1.96))
+lot_em <- list(mean = log(1.19), se = (log(1.30)-log(1.09))/(2*1.96))
 ```
 
 The function `simulate_data()` simulates a network of evidence that has the same topology as, and effect sizes and standard errors that are similar in distribution to, the PFS network. The returned data frame has two columns for effect size, `cTE` and `eTE`, for control and experimental, respectively. The control effect sizes are not subject to effect modification, while the experimental effect sizes are. The variable `nl` specifies the number of levels of the effect modification variable, which is 2 for refractory status, and can be larger for LOT. Because RHR is defined relative to the previous level, effect modification "compounds" with each subsequent level, which is equivalent to being cumulative on the log scale. We assume that there is no effect modification for the first level of the effect modifier variable, and then that modification applies and compounds with each subsequent level.
