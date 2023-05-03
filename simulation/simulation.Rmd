@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 This document describes a simulation study to investigate the likely effect of the estimated effect modification on NMA estimates.
 
-The following packages are used, and we set the random seed to ensure reproducibility (at least under the environment used, which is described in full in the Appendix).
+The following packages are used, and we set the random seed to ensure reproducibility (at least under the environment used, which is described in full in the Appendix). We also specify the number of replications for the simulations.
 
 ```{r}
 library(tidyverse)
@@ -31,6 +31,8 @@ library(netmeta)
 library(knitr)
 import::from(magrittr, "%>%")
 set.seed(1234)
+
+n_rep <- 1000
 ```
 
 ## Network topology and treatment components
@@ -87,8 +89,6 @@ os_s2re <- 0.115 # Estimated random effects variance.
 We also need to parameterize the distribution of effect modification. The estimates used are from the meta-analysis of relative hazard ratio (RHR) for refractory status for PFS, which corresponds to the worst-case scenario (i.e., largest effect modification). The estimated values (a point estimate and a 95% CI) are on a ratio scale, so we take logs to define the mean and standard error on the log HR scale. Similarly, we define the worst-case RHR for LOT (also from PFS).
 
 ```{r}
-pfs_em <- list(mean = log(1.31), se = (log(1.47)-log(1.16))/(2*1.96))
-lot_em <- list(mean = log(1.19), se = (log(1.29)-log(1.09))/(2*1.96))
 pfs_em <- list(mean = log(1.32), se = (log(1.49)-log(1.18))/(2*1.96))
 lot_em <- list(mean = log(1.19), se = (log(1.30)-log(1.09))/(2*1.96))
 ```
@@ -173,12 +173,12 @@ compare_estimates <- function(s) { # s given by simulate_data().
 }
 ```
 
-# Simulation studies
+# Simulation study 1: Proportion of NMA estimates expected to differ using the estimated RHRs
 
 The function `simulation_study()` runs a simulation study under specified conditions (combinations of effect modification and random effects).
 
 ```{r}
-simulation_study <- function(n = 1000,
+simulation_study <- function(n = n_rep,
                              x = net,
                              em = pfs_em,      # Effect mod. parameters.
                              nl = 2,           # N. levels of EM var.
@@ -210,7 +210,7 @@ simulation_study <- function(n = 1000,
 The full experiment is a set of simulation studies, including sensitivity analyses.
 
 ```{r}
-run_experiment <- function(n = 1000) {
+run_experiment <- function(n = n_rep) {
   list(
     # Non-uniform direction of effect modification for refractory status.
     simulation_study(n,
@@ -249,10 +249,71 @@ run_experiment <- function(n = 1000) {
   ) %>% map(as_tibble) %>% bind_rows()
 }
 
-run_experiment(n = 1000) %>% kable()
+run_experiment(n = n_rep) %>% kable()
 ```
 
+# Simulation study 2: NMA estimates expected to differ as a function of RHR
 
+The function `proportion_plot()` runs a simulation study to estimate the proportion of NMA estimates that would be expected to differ for a range of values of RHR and plots the result. This code simulates a scenario in which there are 4 LOT categories, effect modification occurs in a uniform direction, and effect modification compounds (i.e., the worst-case in the main simulation).
+
+```{r}
+proportion_plot <- function(n = n_rep, resolution = 20) {
+  # A function to make em lists with a specific log RHR.
+  make_em <- function(log_rhr) {
+    # Return an em list with the specified log RHR and an
+    # SE equal to that imputed for lot_em.
+    list(mean = log_rhr, se = lot_em$se)
+  }
+  
+  # Define the range of log RHRs over which to plot the results.
+  log_rhrs <- seq(0, log(2), length.out = resolution)
+  
+  # Define a function to run and summarize the simulations for a
+  # given value of log RHR.
+  sim <- function(log_rhr) {
+    sim_result <- simulation_study(n = floor(n / resolution),
+                                   em = make_em(log_rhr = log_rhr),
+                                   nl = 4,
+                                   unif_dir = TRUE)
+    prop <- binom.test(x = sim_result$sig, n = sim_result$n)
+    list(rhr = exp(log_rhr),
+         sig = sim_result$sig,
+         n = sim_result$n
+         )
+  }
+  
+  # Map the sim function over the log RHRs and return a data frame.
+  # The code is a little messy, but works.
+  suppressMessages(
+    ret_val <- log_rhrs %>% map(sim) %>% map(unlist) %>% 
+                            as_tibble(.name_repair = "universal") %>%
+                            t() %>% as_tibble(.name_repair = "universal")
+                        
+  )
+  colnames(ret_val) <- c("rhr", "sig", "n")
+  ret_val
+}
+```
+
+Run simulations at each of a range of RHRs, estimating the percentage of NMA estimates that would be expected to differ significantly at each value of RHR.
+
+```{r}
+proportion_plot_data <- proportion_plot(n = n_rep)
+```
+
+Plot the results, with 95% confidence bands.
+
+```{r}
+ggplot(proportion_plot_data, aes(x = rhr, y = sig / n)) +
+  geom_smooth(method = "glm", #family = binomial,
+              formula = y ~ splines::ns(x,8),
+              aes(weight = n)) +
+  xlab("Ratio of hazard ratios (RHR)") +
+  ylab("NMA results expected to differ (%)") +
+  scale_y_continuous(labels = scales::percent) +
+  theme_minimal()
+```
+Look at the percent of NMA results that would be expected to differ at RHR = 1.19, which corresponds to the worst case estimate shown in Table 2 in the main paper. We see that the estimate here agrees reasonably well with that result (e.g., 4.48% is well inside the confidence band at RHR = 1.19). Note that the plot above accounts for the compounding over several levels of the potential effect modifier: if there was only two levels, as there is for refractory status, the percentage of NMA results expected to differ would be smaller.
 
 ## Appendix: System, R version, and package details
 
