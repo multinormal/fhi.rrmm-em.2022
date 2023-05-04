@@ -8,6 +8,12 @@ output:
     fig_height: 5.6
 ---
 
+```{r include=FALSE}
+# Knit this file using:
+# rmarkdown::render(input = "simulation.Rmd", output_file = "simulation.docx", intermediates_dir = tempdir())
+```
+
+
 This report was generated on `r date()` using git revision
 `r system("git rev-parse --short HEAD", intern = TRUE)`.
 
@@ -23,7 +29,7 @@ knitr::opts_chunk$set(
 
 This document describes a simulation study to investigate the likely effect of the estimated effect modification on NMA estimates.
 
-The following packages are used, and we set the random seed to ensure reproducibility (at least under the environment used, which is described in full in the Appendix).
+The following packages are used, and we set the random seed to ensure reproducibility (at least under the environment used, which is described in full in the Appendix). We also specify the number of replications for the simulations.
 
 ```{r}
 library(tidyverse)
@@ -31,6 +37,8 @@ library(netmeta)
 library(knitr)
 import::from(magrittr, "%>%")
 set.seed(1234)
+
+n_rep <- 1000
 ```
 
 ## Network topology and treatment components
@@ -87,8 +95,8 @@ os_s2re <- 0.115 # Estimated random effects variance.
 We also need to parameterize the distribution of effect modification. The estimates used are from the meta-analysis of relative hazard ratio (RHR) for refractory status for PFS, which corresponds to the worst-case scenario (i.e., largest effect modification). The estimated values (a point estimate and a 95% CI) are on a ratio scale, so we take logs to define the mean and standard error on the log HR scale. Similarly, we define the worst-case RHR for LOT (also from PFS).
 
 ```{r}
-pfs_em <- list(mean = log(1.31), se = (log(1.47)-log(1.16))/(2*1.96))
-lot_em <- list(mean = log(1.19), se = (log(1.29)-log(1.09))/(2*1.96))
+pfs_em <- list(mean = log(1.32), se = (log(1.49)-log(1.18))/(2*1.96))
+lot_em <- list(mean = log(1.19), se = (log(1.30)-log(1.09))/(2*1.96))
 ```
 
 The function `simulate_data()` simulates a network of evidence that has the same topology as, and effect sizes and standard errors that are similar in distribution to, the PFS network. The returned data frame has two columns for effect size, `cTE` and `eTE`, for control and experimental, respectively. The control effect sizes are not subject to effect modification, while the experimental effect sizes are. The variable `nl` specifies the number of levels of the effect modification variable, which is 2 for refractory status, and can be larger for LOT. Because RHR is defined relative to the previous level, effect modification "compounds" with each subsequent level, which is equivalent to being cumulative on the log scale. We assume that there is no effect modification for the first level of the effect modifier variable, and then that modification applies and compounds with each subsequent level.
@@ -171,12 +179,12 @@ compare_estimates <- function(s) { # s given by simulate_data().
 }
 ```
 
-# Simulation studies
+# Simulation study 1: Proportion of NMA estimates expected to differ using the estimated RHRs
 
 The function `simulation_study()` runs a simulation study under specified conditions (combinations of effect modification and random effects).
 
 ```{r}
-simulation_study <- function(n = 1000,
+simulation_study <- function(n = n_rep,
                              x = net,
                              em = pfs_em,      # Effect mod. parameters.
                              nl = 2,           # N. levels of EM var.
@@ -208,7 +216,7 @@ simulation_study <- function(n = 1000,
 The full experiment is a set of simulation studies, including sensitivity analyses.
 
 ```{r}
-run_experiment <- function(n = 1000) {
+run_experiment <- function(n = n_rep) {
   list(
     # Non-uniform direction of effect modification for refractory status.
     simulation_study(n,
@@ -247,10 +255,93 @@ run_experiment <- function(n = 1000) {
   ) %>% map(as_tibble) %>% bind_rows()
 }
 
-run_experiment(n = 1000) %>% kable()
+run_experiment(n = n_rep) %>% kable()
 ```
 
+# Simulation study 2: NMA estimates expected to differ as a function of RHR
 
+The function `proportion_plot()` runs a simulation study to estimate the proportion of NMA estimates that would be expected to differ for a range of values of RHR and plots the result. This code simulates a scenario in which there are 4 LOT categories, effect modification occurs in a uniform direction, and effect modification compounds (i.e., the worst-case in the main simulation).
+
+```{r}
+proportion_plot <- function(n = n_rep, resolution = 20, nl = 4, em = lot_em) {
+  # A function to make em lists with a specific log RHR.
+  make_em <- function(log_rhr) {
+    # Return an em list with the specified log RHR and an
+    # SE equal to that for em.
+    list(mean = log_rhr, se = em$se)
+  }
+  
+  # Define the range of log RHRs over which to plot the results.
+  log_rhrs <- seq(0, log(2), length.out = resolution)
+  
+  # Define a function to run and summarize the simulations for a
+  # given value of log RHR.
+  sim <- function(log_rhr) {
+    sim_result <- simulation_study(n = floor(n / resolution),
+                                   em = make_em(log_rhr = log_rhr),
+                                   nl = nl,
+                                   unif_dir = TRUE)
+    prop <- binom.test(x = sim_result$sig, n = sim_result$n)
+    list(rhr = exp(log_rhr),
+         sig = sim_result$sig,
+         n = sim_result$n
+         )
+  }
+  
+  # Map the sim function over the log RHRs and return a data frame.
+  # The code is a little messy, but works.
+  suppressMessages(
+    ret_val <- log_rhrs %>% map(sim) %>% map(unlist) %>% 
+                            as_tibble(.name_repair = "universal") %>%
+                            t() %>% as_tibble(.name_repair = "universal")
+                        
+  )
+  colnames(ret_val) <- c("rhr", "sig", "n")
+  ret_val
+}
+```
+
+Run simulations at each of a range of RHRs, estimating the percentage of NMA estimates that would be expected to differ significantly at each value of RHR, for scenario like that for LOT with 4 categories, and like that for refractory status.
+
+```{r}
+lot_proportion_plot_data     <- proportion_plot(n = n_rep, nl = 4, em = lot_em)
+refract_proportion_plot_data <- proportion_plot(n = n_rep, nl = 2, em = pfs_em)
+```
+
+Plot the results with (approximate) 95% confidence bands, and save them to disk.
+
+```{r}
+# Note that this function does not model the binomial outcome directly
+# (e.g., as in a GLM with formula (n,N) ~ rhr), but the curve that is
+# drawn using the spline interpolant gives very similar results and
+# allowed a "nicer" curve to be drawn, and that hopefully results in
+# a better understanding of the shape of the function being estimated.
+make_plot <- function(results, title, subtitle, ref_rhr) {
+  labels <- function(x) scales::percent(x, accuracy = 2)
+  ggplot(results, aes(x = rhr, y = sig / n)) +
+    geom_smooth(method = "glm",
+                formula = y ~ splines::ns(x,8),
+                aes(weight = n)) +
+    xlab("Ratio of hazard ratios (RHR)") +
+    ylab("NMA results expected to differ (%)") +
+    ggtitle(title, subtitle = subtitle) +
+    geom_vline(xintercept = ref_rhr, linetype="dashed") +
+    annotate("text", x = ref_rhr+0.12, y = -0.05, label = paste0("RHR = ", ref_rhr)) +
+    scale_y_continuous(labels = labels, limits = c(-0.1,0.5)) +
+    theme_minimal()  
+}
+
+make_plot(lot_proportion_plot_data, title = "Simulation for lines of treatment", 
+          subtitle = "(4 categories, consistent direction of effect modification)",
+          ref_rhr = 1.19) %>% 
+  ggsave(filename = "../products/simulation-lot.png", width = 5, height = 3)
+make_plot(refract_proportion_plot_data, title = "Simulation for refractory status",
+          subtitle = "(2 categories, consistent direction of effect modification)",
+          ref_rhr = 1.32) %>% 
+  ggsave(filename = "../products/simulation-refract.png", width = 5, height = 3)
+```
+
+Look at the percent of NMA results for the LOT-like scenario that would be expected to differ at RHR = 1.19, which corresponds to the worst case estimate shown in Table 2 in the main paper. We see that the estimate here agrees reasonably well with that result (e.g., 4.48% is well inside the confidence band at RHR = 1.19). Note that the plot accounts for the compounding over 4 levels of the potential effect modifier: if there were fewer levels, as for refractory status, the percentage of NMA results expected to differ would be smaller for the LOT-like simulation.
 
 ## Appendix: System, R version, and package details
 
