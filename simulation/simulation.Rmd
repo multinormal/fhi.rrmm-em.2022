@@ -8,6 +8,12 @@ output:
     fig_height: 5.6
 ---
 
+```{r include=FALSE}
+# Knit this file using:
+# rmarkdown::render(input = "simulation.Rmd", output_file = "simulation.docx", intermediates_dir = tempdir())
+```
+
+
 This report was generated on `r date()` using git revision
 `r system("git rev-parse --short HEAD", intern = TRUE)`.
 
@@ -295,39 +301,47 @@ proportion_plot <- function(n = n_rep, resolution = 20, nl = 4, em = lot_em) {
 }
 ```
 
-Run simulations at each of a range of RHRs, estimating the percentage of NMA estimates that would be expected to differ significantly at each value of RHR, for scenaious like that for LOT with 4 categories, and like that for refractory status.
+Run simulations at each of a range of RHRs, estimating the percentage of NMA estimates that would be expected to differ significantly at each value of RHR, for scenario like that for LOT with 4 categories, and like that for refractory status.
 
 ```{r}
 lot_proportion_plot_data     <- proportion_plot(n = n_rep, nl = 4, em = lot_em)
 refract_proportion_plot_data <- proportion_plot(n = n_rep, nl = 2, em = pfs_em)
 ```
 
-Plot the results, with 95% confidence bands.
+Plot the results with (approximate) 95% confidence bands, and save them to disk.
 
 ```{r}
+# Note that this function does not model the binomial outcome directly
+# (e.g., as in a GLM with formula (n,N) ~ rhr), but the curve that is
+# drawn using the spline interpolant gives very similar results and
+# allowed a "nicer" curve to be drawn, and that hopefully results in
+# a better understanding of the shape of the function being estimated.
 make_plot <- function(results, title, subtitle, ref_rhr) {
+  labels <- function(x) scales::percent(x, accuracy = 2)
   ggplot(results, aes(x = rhr, y = sig / n)) +
-    geom_smooth(method = "glm", #family = binomial,
+    geom_smooth(method = "glm",
                 formula = y ~ splines::ns(x,8),
                 aes(weight = n)) +
     xlab("Ratio of hazard ratios (RHR)") +
     ylab("NMA results expected to differ (%)") +
     ggtitle(title, subtitle = subtitle) +
     geom_vline(xintercept = ref_rhr, linetype="dashed") +
-    scale_y_continuous(labels = scales::percent, limits = c(-0.1,0.5)) +
+    annotate("text", x = ref_rhr+0.12, y = -0.05, label = paste0("RHR = ", ref_rhr)) +
+    scale_y_continuous(labels = labels, limits = c(-0.1,0.5)) +
     theme_minimal()  
 }
 
-make_plot(lot_proportion_plot_data, title = "LOT-like Simulation", 
-          subtitle = "(4 categories, consistent direction of modification)",
+make_plot(lot_proportion_plot_data, title = "Simulation for lines of treatment", 
+          subtitle = "(4 categories, consistent direction of effect modification)",
           ref_rhr = 1.19) %>% 
   ggsave(filename = "../products/simulation-lot.png", width = 5, height = 3)
-make_plot(refract_proportion_plot_data, title = "Refractory-like Simulation",
-          subtitle = "(2 categories, consistent direction of modification)",
+make_plot(refract_proportion_plot_data, title = "Simulation for refractory status",
+          subtitle = "(2 categories, consistent direction of effect modification)",
           ref_rhr = 1.32) %>% 
   ggsave(filename = "../products/simulation-refract.png", width = 5, height = 3)
 ```
-Look at the percent of NMA results that would be expected to differ at RHR = 1.19, which corresponds to the worst case estimate shown in Table 2 in the main paper. We see that the estimate here agrees reasonably well with that result (e.g., 4.48% is well inside the confidence band at RHR = 1.19). Note that the plot above accounts for the compounding over several levels of the potential effect modifier: if there was only two levels, as there is for refractory status, the percentage of NMA results expected to differ would be smaller.
+
+Look at the percent of NMA results for the LOT-like scenario that would be expected to differ at RHR = 1.19, which corresponds to the worst case estimate shown in Table 2 in the main paper. We see that the estimate here agrees reasonably well with that result (e.g., 4.48% is well inside the confidence band at RHR = 1.19). Note that the plot accounts for the compounding over 4 levels of the potential effect modifier: if there were fewer levels, as for refractory status, the percentage of NMA results expected to differ would be smaller for the LOT-like simulation.
 
 ## Appendix: System, R version, and package details
 
