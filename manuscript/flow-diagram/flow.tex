@@ -67,28 +67,24 @@
           \item 4 from manual search
         \end{itemize}
       };
-      & \node [block_left] (excluded2) {\textbf{29 references excluded} \\
+      & \node [block_left] (excluded2) {\textbf{28 references excluded} \\
           \begin{itemize}[leftmargin=*, nolistsep]
-            \item 7 from SR
+            \item 6 from SR
             \item 22 from search
           \end{itemize}}; \\
       % Data extraction 1
       \node [block_assign] (data1) {\textbf{Data extraction for HTA} \\
-        72 references included:
+        73 references included:
         \begin{itemize}[leftmargin=*, nolistsep]
-          \item 31 from SR
+          \item 32 from SR
           \item 37 from search
           \item 4 from manual search
         \end{itemize}};
-      & \node [block_left] (excluded3) {\textbf{29 references excluded} \\
+      & \node [block_left] (excluded3) {\textbf{31 references excluded} \\
           Did not report HRs for OS or PFS}; \\
       % Data extraction 2
       \node [block_assign] (data2) {\textbf{Data extraction for stratified analyses} \\
-        42 references included};
-      & \node [block_left] (excluded4) {\textbf{2 references excluded} \\
-          Did not report stratified estimates}; \\
-      % Included
-      \node [block_assign] (included) {\textbf{40 references included}};\\
+        42 references included};\\
     };% end matrix
     % connecting nodes with paths
     \begin{scope}[every path/.style=line]
@@ -99,8 +95,6 @@
       \path (full_text) -- (data1);
       \path (data1) -- (excluded3);
       \path (data1) -- (data2);
-      \path (data2) -- (excluded4);
-      \path (data2) -- (included);
     \end{scope}
   \end{tikzpicture}
 \end{center}
